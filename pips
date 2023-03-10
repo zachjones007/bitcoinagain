@@ -1,2 +1,3 @@
 !pip install pandas requests beautifulsoup4 nltk transformers torch sklearn yfinance matplotlib ta 
+!pip install yfinance transformers pandas sklearn ta
 
