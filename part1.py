@@ -18,8 +18,8 @@ def get_federal_reserve_data():
         if "sentiment" in entity_sentiment:
             entity_sentiment_value = entity.get("sentiment", {}).get("score", 0)
             if entity_sentiment_value > 0:
-                sentiment = 1
+                sentiment = -25
             else:
-                sentiment = -1
+                sentiment = 25
             break
     return sentiment
