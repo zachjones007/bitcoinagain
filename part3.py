@@ -1,20 +1,78 @@
+# Import necessary libraries
+import yfinance as yf
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from transformers import BertTokenizer, BertForSequenceClassification
+import torch
+
 # Define statements as a global variable
 statements = []
 
 def fetch_fed_statements():
     global statements
     # ... code to fetch and process statements ...
-
+    return pd.DataFrame({'Statements': statements})
 
 def market_sentiment_score():
     # ... code to analyze sentiment and calculate accuracy ...
+    return accuracy
 
+if __name__ == "__main__":
+    # Fetch historical data for Fantom
+    ftm = yf.Ticker("FTM-USD")
+    data = ftm.history(period="max")
 
-  if __name__ == "__main__":
-    #df
+    # Load the pre-trained BERT model and tokenizer
+    model = BertForSequenceClassification.from_pretrained("bert-base-uncased")
+    tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+
+    # Analyze the sentiment of the statements made by the Federal Reserve
     fed_df = fetch_fed_statements()
     print("Federal Reserve Statements:\n", fed_df.head(), "\n")
 
-    #acc
-    acc = market_sentiment_score()
-    print("Accuracy:", acc)
+    # Assign sentiment scores to the historical data DataFrame
+    scores = []
+    for statement in statements:
+        input_ids = torch.tensor([tokenizer.encode(statement, add_special_tokens=True)])
+        with torch.no_grad():
+            output = model(input_ids)[0]
+        score = torch.sigmoid(output[0,0]).item()
+        scores.append(score)
+    data['sentiment'] = [scores[i % len(scores)] for i in range(len(data))]
+
+    # Add RSI column
+    delta = data['Close'].diff()
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+    avg_gain = gain.rolling(window=12).mean()
+    avg_loss = loss.rolling(window=12).mean()
+    rs = avg_gain / avg_loss
+    data['RSI'] = 100 - (100 / (1 + rs))
+
+    # Create a new column for the label, 1 for an increase in price and 0 for a decrease
+    data['label'] = (data['Close'] > data['Close'].shift(1)).astype(int)
+
+    # Create a feature dataset, dropping unnecessary columns
+    features = data[['RSI','sentiment']]
+
+    # Fill missing values with mean
+    features = features.fillna(features.mean())
+    # Drop rows with missing values
+    features = features.dropna()
+
+    # Split the dataset into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(features, data['label'], test_size=0.2, random_state=42)
+
+    # Create a logistic regression model
+    log_reg = LogisticRegression()
+
+    # Train the model on the training data
+    log_reg.fit(X_train, y_train)
+
+    # Test the model's performance on the testing data
+    accuracy = log_reg.score(X_test, y_test)
+
+    # Print information about parts 1 and 2
+    print("Historical Data for Fantom:\n", data.head(), "\n")
+    print("Accuracy:", accuracy)
