@@ -1,3 +1,4 @@
-#printpage
+import part3
 
-print(calculate_combined_score())
+result = part3.combine()
+print(f"The combined score is: {result}")
