@@ -1,14 +1,14 @@
 #part 3
 from part1 import sentimen
-from part2 import get_bitcoin_data, analyze_bitcoin
+from part2 import score
 
 def main():
     # Get data from APIs
-    bitcoin_data = get_bitcoin_data()
+    bitcoin_data = score()
     federal_reserve_data = analyze_federal_reserve()
 
     # Analyze data
-    bitcoin_analysis = analyze_bitcoin(bitcoin_data)
+    score = analyze_bitcoin(bitcoin_data)
     federal_reserve_analysis = analyze_federal_reserve(federal_reserve_data)
 
     # Determine overall market sentiment
