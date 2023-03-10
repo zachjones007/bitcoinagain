@@ -1,14 +1,29 @@
-# Import necessary libraries and functions from parts 1 and 2
+# Import necessary libraries
 import pandas as pd
-from part1 import get_fed_statements
-from part2 import market_sentiment_score
+import requests
+from bs4 import BeautifulSoup
+import re
 
-# Part 3
-if __name__ == "__main__":
-    # Run part 1
-    fed_df = get_fed_statements()
-    print("Federal Reserve Statements:\n", fed_df.head(), "\n")
+# Define a function to get the text of recent Federal Reserve statements
+def get_fed_statements():
+    # Send a request to the Federal Reserve's press release page
+    url = 'https://www.federalreserve.gov/newsevents/pressreleases.htm'
+    response = requests.get(url)
+    
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    # Find the link to the most recent press release
+    latest_link = soup.find('a', string=re.compile('Press Release')).get('href')
+    
+    # Send a request to the press release page and get the content
+    response = requests.get(latest_link)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    # Extract the content of the press release
+    content = soup.find('div', class_='col-xs-12 col-sm-8 col-md-8').get_text().strip()
+    
+    return content
 
-    # Run part 2
-    acc = market_sentiment_score()
-    print("Accuracy:", acc)
+# Print the text of the most recent Federal Reserve statement
+print(get_fed_statements())
