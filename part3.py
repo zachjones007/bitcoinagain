@@ -1,24 +1,9 @@
 #part 3
-from part1 import sentimen
-from part2 import score
+import part1
+import part2
 
-def main():
-    # Get data from APIs
-    bitcoin_data = score()
-    federal_reserve_data = analyze_federal_reserve()
+def calculate_combined_score():
+    sentiment = part1.get_fed_data()
+    score = part2.calculate_rsi_score()
+    return sentiment + score
 
-    # Analyze data
-    score = analyze_bitcoin(bitcoin_data)
-    federal_reserve_analysis = analyze_federal_reserve(federal_reserve_data)
-
-    # Determine overall market sentiment
-    sentiment = bitcoin_analysis + sentimen
-    if sentiment > 0:
-        print("Market sentiment is bullish.")
-    elif sentiment < 0:
-        print("Market sentiment is bearish.")
-    else:
-        print("Market sentiment is neutral.")
-
-if __name__ == "__main__":
-    main()1
