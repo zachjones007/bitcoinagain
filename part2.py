@@ -16,11 +16,8 @@ avg_loss = loss.rolling(window=14).mean()
 rs = avg_gain / avg_loss
 rsi = 100 - (100 / (1 + rs))
 
-# Calculate the most recent RSI value
-recent_rsi = rsi.iloc[-1]
+# Calculate score on a scale of -50 to 50
+score = ((rsi.iloc[-1] - 50) / 50) * 100
 
-# Scale RSI to -50 to 50 range
-scaled_rsi = ((recent_rsi - 50) / 50) * 100
-
-# Print the scaled RSI value
-print("Scaled RSI: ", scaled_rsi)
+# Output single score on a scale of -50 to 50
+print(score)
