@@ -1,28 +1,21 @@
-def get_fed_statements():
-    # Fetch the webpage containing the list of recent FOMC statements
-    url = 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm'
-    response = requests.get(url)
+from transformers import BertTokenizer, BertForSequenceClassification
+import torch
 
-    # Parse the HTML content of the webpage
-    soup = BeautifulSoup(response.content, 'html.parser')
+# Load the pre-trained BERT model and tokenizer
+model = BertForSequenceClassification.from_pretrained("bert-base-uncased")
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
-    # Extract the URLs for the statements
-    statement_links = []
-    for link in soup.find_all('a', href=True):
-        href = link['href']
-        if href.startswith('/newsevents/pressreleases/monetary'):
-            statement_links.append('https://www.federalreserve.gov' + href)
+# Analyze the sentiment of the statements made by the Federal Reserve
+statements = ["The Federal Reserve is committed to maintaining price stability and supporting the economic recovery.", "The Federal Reserve is concerned about rising inflation and may raise interest rates."]
+scores = []
+for statement in statements:
+    input_ids = torch.tensor([tokenizer.encode(statement, add_special_tokens=True)])
+    with torch.no_grad():
+        output = model(input_ids)[0]
+    score = torch.sigmoid(output[0,0]).item()
+    scores.append(score)
 
-    # Fetch the content of the statements
-    statements = []
-    for link in statement_links:
-        response = requests.get(link)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        content = soup.find('div', class_='col-xs-12 col-sm-8 col-md-8 col-lg-8').get_text().strip()
-        statements.append(content)
-
-    # Create a Pandas DataFrame containing the statements
-    data = {'text': statements}
-    df = pd.DataFrame(data)
-
-    return df
+# Print the sentiment scores for the two example statements
+print("Sentiment scores:")
+for i, statement in enumerate(statements):
+    print(f"Statement {i+1}: {statement}\nScore: {scores[i]}\n")
