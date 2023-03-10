@@ -1,9 +1,12 @@
 #part 3
+
+
+
 import part1
 import part2
 
-def calculate_combined_score():
-    sentiment = part1.get_fed_data()
-    score = part2.calculate_rsi_score()
-    return sentiment + score
-
+def combine():
+    sentiment, bias = part1.analyze_data()
+    score = part2.calculate_rsi()
+    combined_score = sentiment + score
+    return combined_score, bias
