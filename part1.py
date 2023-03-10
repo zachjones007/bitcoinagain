@@ -1,5 +1,3 @@
-#part 1 
-
 import requests
 import json
 import datetime
@@ -32,6 +30,7 @@ def analyze_data():
         print(f"Unique bias change to {current_bias} on {datetime.date.today()}")
     else:
         print(f"Current bias: {current_bias}")
+    return current_sentiment, current_bias
 
 def get_bias_changes():
     bias_changes = []
@@ -69,5 +68,7 @@ def get_fed_data_for_date(date):
         sentiment = 25 if value > 2.25 else -25
     return sentiment
 
-analyze_data()
+sentiment, bias = analyze_data()
+print(f"Current sentiment: {sentiment}")
+
 get_bias_changes()
