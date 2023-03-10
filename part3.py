@@ -1,5 +1,5 @@
 #part 3
-from part1 import analyze_federal_reserve
+from part1 import sentimen
 from part2 import get_bitcoin_data, analyze_bitcoin
 
 def main():
@@ -12,7 +12,7 @@ def main():
     federal_reserve_analysis = analyze_federal_reserve(federal_reserve_data)
 
     # Determine overall market sentiment
-    sentiment = bitcoin_analysis + federal_reserve_analysis
+    sentiment = bitcoin_analysis + sentimen
     if sentiment > 0:
         print("Market sentiment is bullish.")
     elif sentiment < 0:
