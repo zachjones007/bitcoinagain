@@ -1,3 +1,5 @@
+#part 1 
+
 import requests
 
 def get_federal_reserve_data():
@@ -22,4 +24,5 @@ def get_federal_reserve_data():
             else:
                 sentiment = 25
             break
+    print("Sentiment value:", sentiment)
     return sentiment
