@@ -22,16 +22,34 @@ def get_fed_data():
     return sentiment
 
 def analyze_data():
-    today = datetime.date.today()
-    if today.weekday() == 0:
-        yesterday = today - datetime.timedelta(days=3)
-    else:
-        yesterday = today - datetime.timedelta(days=1)
-    current_sentiment = get_fed_data_for_date(today)
-    prev_sentiment = get_fed_data_for_date(yesterday)
+    current_sentiment = get_fed_data()
     current_bias = "Unbiased" if current_sentiment == 0 else "Hawkish" if current_sentiment > 0 else "Dovish"
-    print(f"Current Bias: {current_sentiment}")
-    return current_sentiment
+    with open("previous_sentiment.txt", "r") as f:
+        previous_bias = f.read().strip()
+    if current_bias != previous_bias:
+        with open("previous_sentiment.txt", "w") as f:
+            f.write(current_bias)
+        print(f"Unique bias change to {current_bias} on {datetime.date.today()}")
+    else:
+        print(f"Current bias: {current_bias}")
+
+def get_bias_changes():
+    bias_changes = []
+    for i in range(10):
+        today = datetime.date.today() - datetime.timedelta(days=i)
+        if today.weekday() == 0:
+            yesterday = today - datetime.timedelta(days=3)
+        else:
+            yesterday = today - datetime.timedelta(days=1)
+        current_sentiment = get_fed_data_for_date(today)
+        prev_sentiment = get_fed_data_for_date(yesterday)
+        current_bias = "Unbiased" if current_sentiment == 0 else "Hawkish" if current_sentiment > 0 else "Dovish"
+        prev_bias = "Unbiased" if prev_sentiment == 0 else "Hawkish" if prev_sentiment > 0 else "Dovish"
+        if current_bias != prev_bias:
+            bias_changes.append((yesterday, prev_bias, current_bias))
+    for i in range(len(bias_changes) - 1, -1, -1):
+        change_date, prev_bias, current_bias = bias_changes[i]
+        print(f"{change_date}: {prev_bias} -> {current_bias}")
 
 def get_fed_data_for_date(date):
     url = "https://api.stlouisfed.org/fred/series/observations"
@@ -52,4 +70,4 @@ def get_fed_data_for_date(date):
     return sentiment
 
 analyze_data()
-
+get_bias_changes()
