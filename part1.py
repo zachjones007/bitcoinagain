@@ -1,22 +1,23 @@
-import yfinance as yf
-import numpy as np
+import requests
 
-# Get historical data of US 10-year Treasury yield
-data = yf.download("^TNX", period="1y")["Close"]
+def get_bitcoin_prices():
+    url = "https://api.coindesk.com/v1/bpi/historical/close.json?start=2022-02-08&end=2022-03-08"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return list(data["bpi"].values())
+    else:
+        raise Exception(f"Error retrieving prices: {response.status_code} - {response.text}")
+        
+def determine_market_trend(prices):
+    avg_price = sum(prices) / len(prices)
+    if prices[-1] > avg_price:
+        return "Bullish"
+    else:
+        return "Bearish"
 
-# Calculate RSI
-delta = np.diff(data)
-gain = delta * (delta > 0)
-loss = -delta * (delta < 0)
-avg_gain = np.zeros_like(data)
-avg_loss = np.zeros_like(data)
-avg_gain[14] = np.mean(gain[:14])
-avg_loss[14] = np.mean(loss[:14])
-for i in range(15, len(data)):
-    avg_gain[i] = (avg_gain[i-1] * 13 + gain[i-1]) / 14
-    avg_loss[i] = (avg_loss[i-1] * 13 + loss[i-1]) / 14
-rs = avg_gain / avg_loss
-rsi = 100 - (100 / (1 + rs))
+if __name__ == "__main__":
+    prices = get_bitcoin_prices()
+    trend = determine_market_trend(prices)
+    print(f"Bitcoin market is {trend} based on the last 30 days of price data.")
 
-# Print out the last RSI value
-print(f"Last RSI value: {rsi[-1]:.2f}")
