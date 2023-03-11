@@ -1,24 +1,20 @@
-from part1 import Bitcoin
-from part2 import Trade
-from part3 import Analysis
+import os
+import sys
+import numpy as np
+import pandas as pd
 
-def print_results():
-    bitcoin = Bitcoin()
-    trade = Trade()
-    analysis = Analysis()
+# add the bitcoinagain directory to the path
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 
-    data1 = bitcoin.get_historical_data()
-    data2 = trade.get_trades()
-    result = analysis.analyze()
+# import the part1 and part2 functions
+from bitcoinagain.part1 import get_rsi
+from bitcoinagain.part2 import get_overbought_oversold
+from bitcoinagain.part3 import get_market_sentiment
 
-    # Print out the results
-    print("Part 1 - RSI Values:")
-    print(data1['rsi'])
-    print("Part 2 - Overbought/Oversold Values:")
-    print("Overbought:", data2['overbought'])
-    print("Oversold:", data2['oversold'])
-    print("Part 3 - Analysis Result:")
-    print(result)
-
-if __name__ == '__main__':
-    print_results()
+symbol = 'BTCUSDT'
+interval = '1d'
+rsi_time_period = 14
+market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
+print('Market Sentiment:', market_sentiment)
