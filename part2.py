@@ -1,44 +1,58 @@
-#part 2
 import requests
 import numpy as np
 
-ENDPOINT = "https://api.pro.coinbase.com"
-PRODUCT_ID = "BTC-USD"
+class Trade:
+    def __init__(self):
+        self.base_url = 'https://api.pro.coinbase.com'
+        self.product_id = 'BTC-USD'
 
-def get_price():
-    url = f"{ENDPOINT}/products/{PRODUCT_ID}/ticker"
-    response = requests.get(url)
-    if response.status_code == 200:
+    def get_trades(self):
+        url = f"{self.base_url}/products/{self.product_id}/candles"
+        params = {
+            'granularity': '86400' # 1 day
+        }
+        response = requests.get(url, params=params)
+
         data = response.json()
-        price = float(data["price"])
-        return price
-    else:
-        raise Exception(f"Error retrieving price: {response.status_code} - {response.text}")
+        prices = [float(row[4]) for row in data]
+        rsi = self.calculate_rsi(prices)
+        overbought, oversold = self.calculate_overbought_oversold(rsi)
 
-def calculate_rsi(prices, period=14):
-    changes = np.diff(prices)
-    gains = changes.clip(min=0)
-    losses = -changes.clip(max=0)
-    avg_gain = np.mean(gains[-period:])
-    avg_loss = np.mean(losses[-period:])
-    if avg_loss == 0:
-        rsi = 100
-    else:
+        return {
+            'overbought': overbought,
+            'oversold': oversold
+        }
+
+    def calculate_rsi(self, data, period=14):
+        # Calculate the gains and losses for each period
+        changes = [data[i] - data[i-1] for i in range(1, len(data))]
+        gains = [max(0, x) for x in changes]
+        losses = [max(0, -x) for x in changes]
+
+        # Calculate the average gains and losses over the specified period
+        avg_gain = sum(gains[:period]) / period
+        avg_loss = sum(losses[:period]) / period
+
+        # Calculate the initial RSI value
         rs = avg_gain / avg_loss
         rsi = 100 - (100 / (1 + rs))
-    return rsi
 
-def main():
-    prices = []
-    for i in range(15):
-        price = get_price()
-        prices.append(price)
-        print(f"BTC-USD Price: ${price:.2f}")
-    rsi = calculate_rsi(prices)
-    if np.isnan(rsi):
-        print("BTC-USD RSI: N/A")
-    else:
-        print(f"BTC-USD RSI: {rsi:.2f}")
+        # Calculate the RSI values for subsequent periods
+        for i in range(period, len(data)):
+            change = data[i] - data[i-1]
+            gain = max(0, change)
+            loss = max(0, -change)
 
-if __name__ == "__main__":
-    main()
+            avg_gain = ((period - 1) * avg_gain + gain) / period
+            avg_loss = ((period - 1) * avg_loss + loss) / period
+
+            rs = avg_gain / avg_loss
+            rsi = 100 - (100 / (1 + rs))
+
+        return rsi
+
+    def calculate_overbought_oversold(self, rsi, overbought_threshold=70, oversold_threshold=30):
+        overbought = np.argwhere(rsi >= overbought_threshold).flatten()
+        oversold = np.argwhere(rsi <= oversold_threshold).flatten()
+
+        return overbought, oversold
