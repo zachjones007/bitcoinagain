@@ -12,12 +12,11 @@ def get_bitcoin_prices():
 def determine_market_trend(prices):
     avg_price = sum(prices) / len(prices)
     if prices[-1] > avg_price:
-        return "Bullish"
+        return 1
     else:
-        return "Bearish"
+        return -1
 
 if __name__ == "__main__":
     prices = get_bitcoin_prices()
     trend = determine_market_trend(prices)
     print(f"Bitcoin market is {trend} based on the last 30 days of price data.")
-
