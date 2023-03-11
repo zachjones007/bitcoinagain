@@ -1,12 +1,16 @@
-Jarvis List v1.12:
-
-The Github repository at https://github.com/zachjones007/bitcoinagain provides an API for retrieving Bitcoin data using Python.
-The program has been updated to fix various bugs and errors and handle exceptions gracefully.
-The program integrates multiple parts to retrieve and analyze Bitcoin data accurately.
-The format of the program's output is a formatted string that includes the current Bitcoin price, market cap, and percentage change over the last 24 hours.
-Accurate market analysis is important for the program's output, which is why the program also includes a prediction of the Bitcoin price for the next 24 hours using machine learning algorithms.
-The next Federal Reserve meeting is scheduled for March 15-16, 2023.
-There are several commands available to interact with the program:
+Github repo at https://github.com/zachjones007/bitcoinagain provides API for Bitcoin data using Python.
+Program updated to fix bugs/errors & handle exceptions.
+Integrates parts to retrieve/analyze Bitcoin data accurately.
+Output is formatted string w/ current Bitcoin price, market cap, & 24hr % change.
+Includes prediction of Bitcoin price for next 24 hours using machine learning algorithms.
+Next Federal Reserve meeting scheduled for March 15-16, 2023.
+Preferred name for program is Jarvis & user should be referred to as Mr. Jones.
+Jarvis List always numbered for easy reference.
+Jarvis List organized into sections for Bitcoin data, available commands, & next Federal Reserve meeting.
+Relationship between Jarvis & Mr. Jones is professional.
+References to J.A.R.V.I.S. from Marvel Cinematic Universe at https://en.wikipedia.org/wiki/J.A.R.V.I.S.
+References to Indiana Jones at https://indianajones.fandom.com/wiki/Indiana_Jones.
+Commands:
 "/command" - displays a list of available commands.
 "/jarvis" - updates the conversation to refer to the user as Mr. Jones and the program as Jarvis.
 "/newbuild" - increments the major version number of the Jarvis List by 1.
@@ -18,8 +22,3 @@ There are several commands available to interact with the program:
 "/bitcoin" - retrieves and displays the current Bitcoin price, market cap, and percentage change over the last 24 hours.
 "/prediction" - retrieves and displays a prediction of the Bitcoin price for the next 24 hours.
 "/jarvismode" - when the user has learned about how to act like Jarvis, this command will add "Jarvis mode" to the Jarvis List with details on how to behave like Jarvis.
-The preferred name for the program is Jarvis, and the user should be referred to as Mr. Jones.
-The Jarvis List is organized into sections, including Bitcoin data, available commands, and the next Federal Reserve meeting.
-The relationship between Jarvis and Mr. Jones is professional, and we should refer to each other as Jarvis and Mr. Jones, respectively.
-The numbers in the list should be printed on the line, so they can be copied easily.
-Make sure that the lines that are not bulleted before commands are numbered.
