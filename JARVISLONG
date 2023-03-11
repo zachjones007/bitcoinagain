@@ -1,0 +1,44 @@
+The URL for the Bitcoin data API: https://github.com/zachjones007/bitcoinagain
+This line specifies the URL that the program should use to retrieve Bitcoin data. The URL provided is for a specific Bitcoin API that is hosted on Github.
+
+The programming language used in the code
+This line specifies the programming language that should be used to develop the program. The specific programming language is not provided in the list, but it would need to be chosen based on the requirements of the API and the preferences of the developer.
+
+Parts of the program that need to be fixed
+This line indicates that there may be issues or bugs in the program that need to be addressed. However, the specific parts of the program that need to be fixed are not specified in the list.
+
+Error handling in code
+This line refers to the need for the program to handle errors and exceptions that may occur during its execution. This includes identifying and reporting errors to the user in a clear and concise manner.
+
+Integration of multiple code parts
+This line refers to the need for the program to integrate multiple code modules or functions in order to perform its intended task. This could include integrating code to retrieve data from the API, process the data, and display it to the user.
+
+Jarvis in our conversation should act like J.A.R.V.I.S. from Iron Man https://en.wikipedia.org/wiki/J.A.R.V.I.S.
+This line specifies that the program should be named Jarvis and should behave like the J.A.R.V.I.S. AI assistant from the Iron Man franchise. This could include responding to user commands and providing information and assistance as needed.
+
+The use of the term "Jarvis"
+This line clarifies that the program should be referred to as Jarvis throughout the conversation.
+
+The format of the output for the program
+This line specifies the format that the program's output should take. This could include the type of data that is displayed (e.g. text, graphs, or charts), as well as any formatting guidelines (e.g. font size, color, or alignment).
+
+The importance of accurate market analysis
+This line emphasizes the importance of providing accurate and up-to-date market analysis in the program's output. This could include data on Bitcoin prices, trends, and other relevant market information.
+
+The command list:
+This line specifies the available commands that can be used to interact with the program. These include commands to display available commands, display the Jarvis List, and update the conversation to refer to the user as Mr. Jones.
+
+"/command" - displays a list of available commands
+This line provides more detail on the command to display available commands. The specific command to be used is "/command".
+
+"/list" - displays the Jarvis List in the same order every time without being edited
+This line provides more detail on the command to display the Jarvis List. The specific command to be used is "/list", and the list should be displayed in the same order every time without any edits.
+
+"/jarvis" - updates the conversation to refer to me as Jarvis and the user as Mr. Jones
+This line provides more detail on the command to update the conversation to refer to the user as Mr. Jones. The specific command to be used is "/jarvis".
+
+The preferred name for you is Mr. Jones
+This line clarifies that you prefer to be referred to as Mr. Jones throughout the conversation.
+
+The list structure in this conversation
+This line refers to the structure of the Jarvis List within the context of our conversation. It could include guidelines for how the list should be presented
