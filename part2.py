@@ -1,58 +1,34 @@
 import requests
-import numpy as np
+import pandas as pd
+import ta
 
-class Trade:
-    def __init__(self):
-        self.base_url = 'https://api.pro.coinbase.com'
-        self.product_id = 'BTC-USD'
+# Set up the API URL and request parameters
+url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
+params = {"vs_currency": "usd", "days": "1"}
 
-    def get_trades(self):
-        url = f"{self.base_url}/products/{self.product_id}/candles"
-        params = {
-            'granularity': '86400' # 1 day
-        }
-        response = requests.get(url, params=params)
+# Make the API request and convert the response to a Pandas DataFrame
+response = requests.get(url, params=params).json()
+df = pd.DataFrame(response["prices"], columns=["timestamp", "price"])
 
-        data = response.json()
-        prices = [float(row[4]) for row in data]
-        rsi = self.calculate_rsi(prices)
-        overbought, oversold = self.calculate_overbought_oversold(rsi)
+# Convert the timestamp to a datetime object and set it as the index
+df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
+df.set_index("timestamp", inplace=True)
 
-        return {
-            'overbought': overbought,
-            'oversold': oversold
-        }
+# Calculate the RSI using the `ta` library
+rsi = ta.momentum.RSIIndicator(df["price"], window=14)
+df["rsi"] = rsi.rsi()
 
-    def calculate_rsi(self, data, period=14):
-        # Calculate the gains and losses for each period
-        changes = [data[i] - data[i-1] for i in range(1, len(data))]
-        gains = [max(0, x) for x in changes]
-        losses = [max(0, -x) for x in changes]
+# Calculate the overbought/oversold values using the RSI
+overbought = 70
+oversold = 30
+df["overbought"] = overbought
+df["oversold"] = oversold
 
-        # Calculate the average gains and losses over the specified period
-        avg_gain = sum(gains[:period]) / period
-        avg_loss = sum(losses[:period]) / period
+# Determine if the price is overbought or oversold
+df["is_overbought"] = df["rsi"] >= overbought
+df["is_oversold"] = df["rsi"] <= oversold
 
-        # Calculate the initial RSI value
-        rs = avg_gain / avg_loss
-        rsi = 100 - (100 / (1 + rs))
+# Save the results to a CSV file
+df.to_csv("overbought_oversold.csv", index=True)
 
-        # Calculate the RSI values for subsequent periods
-        for i in range(period, len(data)):
-            change = data[i] - data[i-1]
-            gain = max(0, change)
-            loss = max(0, -change)
-
-            avg_gain = ((period - 1) * avg_gain + gain) / period
-            avg_loss = ((period - 1) * avg_loss + loss) / period
-
-            rs = avg_gain / avg_loss
-            rsi = 100 - (100 / (1 + rs))
-
-        return rsi
-
-    def calculate_overbought_oversold(self, rsi, overbought_threshold=70, oversold_threshold=30):
-        overbought = np.argwhere(rsi >= overbought_threshold).flatten()
-        oversold = np.argwhere(rsi <= oversold_threshold).flatten()
-
-        return overbought, oversold
+print("Overbought/Oversold values saved to overbought_oversold.csv")
