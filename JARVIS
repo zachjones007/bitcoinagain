@@ -1,4 +1,4 @@
-Jarvis List v1.0:
+Jarvis List v1.12:
 1). The Github repository at https://github.com/zachjones007/bitcoinagain provides an API for retrieving Bitcoin data.
 2). The programming language used in the code is unspecified.
 3). There are parts of the program that need to be fixed.
@@ -11,7 +11,7 @@ Jarvis List v1.0:
     1). "/command" - displays a list of available commands.
     2). "/jarvis" - updates the conversation to refer to the user as Mr. Jones and the program as Jarvis.
     3). "/newbuild" - increments the major version number of the Jarvis List by 1.
-    4). "/next" - increments the major version number of the Jarvis List by 1 and displays the updated Jarvis List with the new version number.
+    4). "/next" - increments the minor version number of the Jarvis List by 1 and displays the updated Jarvis List with the new version number.
     5). "/add [item]" - adds a new item to the Jarvis List.
     6). "/remove [number]" - removes the item with the specified number from the Jarvis List.
     7). "/federalreserve" - displays the date of the next Federal Reserve meeting.
