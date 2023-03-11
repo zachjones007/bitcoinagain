@@ -1,22 +1,28 @@
 import requests
 
-def get_bitcoin_prices():
-    url = "https://api.coindesk.com/v1/bpi/historical/close.json?start=2022-02-08&end=2022-03-08"
+def get_news_sentiment():
+    url = "https://newsapi.org/v2/everything?q=bitcoin&from=2022-02-08&sortBy=publishedAt&apiKey=YOUR_API_KEY"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        return list(data["bpi"].values())
+        articles = data["articles"]
+        total_articles = len(articles)
+        positive_articles = 0
+        for article in articles:
+            title = article["title"].lower()
+            if "bitcoin" in title and ("high" in title or "increase" in title or "rise" in title):
+                positive_articles += 1
+        positive_ratio = positive_articles / total_articles
+        if positive_ratio >= 0.5:
+            return 1
+        else:
+            return -1
     else:
-        raise Exception(f"Error retrieving prices: {response.status_code} - {response.text}")
-        
-def determine_market_trend(prices):
-    avg_price = sum(prices) / len(prices)
-    if prices[-1] > avg_price:
-        return 1
-    else:
-        return -1
+        raise Exception(f"Error retrieving news: {response.status_code} - {response.text}")
 
-if __name__ == "__main__":
-    prices = get_bitcoin_prices()
-    trend = determine_market_trend(prices)
-    print(f"Bitcoin market is {trend} based on the last 30 days of price data.")
+def bullishorbearish():
+    sentiment = get_news_sentiment()
+    if sentiment == 1:
+        return "Bullish"
+    else:
+        return "Bearish"
