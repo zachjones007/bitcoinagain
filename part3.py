@@ -1,14 +1,20 @@
-import part1
-import part2
+from part1 import Bitcoin
+from part2 import Trade
 
-def combine():
-    sentiment = part1.determine_market_trend(-1)
-    score = part2.calculate_rsi_score()
-    return sentiment + score
+class Analysis:
+    def __init__(self):
+        self.bitcoin = Bitcoin()
+        self.trade = Trade()
 
-def main():
-    result = combine()
-    print(f"The combined score is: {result}")
+    def analyze(self):
+        data1 = self.bitcoin.get_historical_data()
+        data2 = self.trade.get_trades()
 
-if __name__ == "__main__":
-    main()
+        rsi = data1['rsi']
+        overbought = data2['overbought']
+        oversold = data2['oversold']
+
+        # Multiply the RSI value by the number of overbought and oversold levels
+        result = rsi * (len(overbought) + len(oversold))
+
+        return result
