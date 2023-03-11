@@ -1,20 +1,46 @@
-from part1 import Bitcoin
-from part2 import Trade
+import os
+import sys
+import numpy as np
+import pandas as pd
 
-class Analysis:
-    def __init__(self):
-        self.bitcoin = Bitcoin()
-        self.trade = Trade()
+# add the bitcoinagain directory to the path
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 
-    def analyze(self):
-        data1 = self.bitcoin.get_historical_data()
-        data2 = self.trade.get_trades()
+# import the part1 and part2 functions
+from bitcoinagain.part1 import get_rsi
+from bitcoinagain.part2 import get_overbought_oversold
 
-        rsi = data1['rsi']
-        overbought = data2['overbought']
-        oversold = data2['oversold']
+def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
+    rsi_value = get_rsi(symbol, interval, rsi_time_period)
+    overbought, oversold = get_overbought_oversold(symbol, interval)
+    if overbought:
+        sentiment = 100
+    elif oversold:
+        sentiment = 0
+    else:
+        sentiment = (rsi_value - 30) * 100 / 40
 
-        # Multiply the RSI value by the number of overbought and oversold levels
-        result = rsi * (len(overbought) + len(oversold))
+    # load the DXY data from a csv file
+    dxy_data = pd.read_csv('dxy_data.csv')
 
-        return result
+    # calculate the 14-day RSI for DXY
+    delta = dxy_data['Close'].diff()
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+    avg_gain = gain.rolling(window=14).mean()
+    avg_loss = loss.rolling(window=14).mean()
+    rs = avg_gain / avg_loss
+    dxy_rsi = 100 - (100 / (1 + rs.iloc[-1]))
+
+    # multiply the sentiment value by the DXY RSI value
+    market_sentiment = sentiment * dxy_rsi / 100
+
+    return market_sentiment
+
+symbol = 'BTCUSDT'
+interval = '1d'
+rsi_time_period = 14
+market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
+print('Market Sentiment:', market_sentiment)
