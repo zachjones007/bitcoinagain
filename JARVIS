@@ -1,4 +1,5 @@
-Please note that the list will always be numbered by Jarvis, and every time it is updated, the version number will be incremented by 0.01, unless otherwise instructed.
+Jarvis List v1.0:
+
 The URL for the Bitcoin data API: https://github.com/zachjones007/bitcoinagain
 The programming language used in the code
 Parts of the program that need to be fixed
@@ -15,3 +16,4 @@ The command list:
 The preferred name for you is Mr. Jones
 The list structure in this conversation
 "Call me Mr. Jones"
+Ability to add a version number to the list and print it back
