@@ -6,11 +6,9 @@ class Bitcoin:
         self.base_url = 'https://api.pro.coinbase.com'
         self.product_id = 'BTC-USD'
 
-    def get_historical_data(self, start_time, end_time):
+    def get_historical_data(self):
         url = f"{self.base_url}/products/{self.product_id}/candles"
         params = {
-            'start': start_time.isoformat(),
-            'end': end_time.isoformat(),
             'granularity': '86400' # 1 day
         }
         response = requests.get(url, params=params)
@@ -51,9 +49,3 @@ class Bitcoin:
             rsi = 100 - (100 / (1 + rs))
 
         return rsi
-    bitcoin = Bitcoin()
-start_time = datetime.datetime(2022, 1, 1)
-end_time = datetime.datetime(2022, 3, 1)
-data = bitcoin.get_historical_data(start_time, end_time)
-print(data['prices'])
-print(data['rsi'])
