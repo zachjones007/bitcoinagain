@@ -51,3 +51,9 @@ class Bitcoin:
             rsi = 100 - (100 / (1 + rs))
 
         return rsi
+    bitcoin = Bitcoin()
+start_time = datetime.datetime(2022, 1, 1)
+end_time = datetime.datetime(2022, 3, 1)
+data = bitcoin.get_historical_data(start_time, end_time)
+print(data['prices'])
+print(data['rsi'])
