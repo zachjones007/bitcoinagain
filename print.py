@@ -1,15 +1,24 @@
-import part1
-import part2
-import part3
+from part1 import Bitcoin
+from part2 import Trade
+from part3 import Analysis
 
-def main():
-    result = combine()
+def print_results():
+    bitcoin = Bitcoin()
+    trade = Trade()
+    analysis = Analysis()
+
+    data1 = bitcoin.get_historical_data()
+    data2 = trade.get_trades()
+    result = analysis.analyze()
+
+    # Print out the results
+    print("Part 1 - RSI Values:")
+    print(data1['rsi'])
+    print("Part 2 - Overbought/Oversold Values:")
+    print("Overbought:", data2['overbought'])
+    print("Oversold:", data2['oversold'])
+    print("Part 3 - Analysis Result:")
     print(result)
 
-def combine():
-    sentiment = part1.bullishorbearish(-1)
-    score = part2.calculate_rsi_score()
-    return sentiment + score
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    print_results()
