@@ -1,0 +1,21 @@
+part1.py:
+
+Modify get_historical_data() to retrieve daily candlestick data by setting granularity to "86400" in the API URL.
+Implement the RSI calculation algorithm as described in my previous response.
+Modify get_historical_data() to return a dictionary containing both the historical price data and the RSI values.
+part2.py:
+
+Modify get_trades() to retrieve daily candlestick data by setting granularity to "86400" in the API URL.
+Calculate the overbought and oversold levels based on the RSI values obtained in part1.py.
+part3.py:
+
+Import part1 and part2 and create an instance of the Bitcoin class to retrieve historical price and RSI data.
+Create an instance of the Trade class to retrieve overbought and oversold levels from the Coinbase Pro API.
+Define a new method called calculate_rating() that multiplies the RSI and overbought/oversold data together to get a new score.
+Define a new method called get_portfolio_rating() that calculates the rating for the entire portfolio by combining the ratings for each individual asset.
+Define a new method called get_portfolio_value() that calculates the current value of the portfolio based on the current market prices.
+Modify Portfolio.__str__() to print out the portfolio value and rating along with the asset holdings.
+print.py:
+
+Modify print_portfolio() to print out the new rating data in addition to the current asset holdings and values.
+Please note that the modifications outlined above are high-level and will require you to implement the details yourself. Additionally, you will need to test and debug your code to ensure that it is working as intended.
