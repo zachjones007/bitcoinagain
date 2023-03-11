@@ -9,7 +9,7 @@ Jarvis List v1.12:
 8). The next Federal Reserve meeting is scheduled for March 15-16, 2023.
 9). There are several commands available to interact with the program, including:
     1). "/command" - displays a list of available commands.
-    2). "/jarvis" - updates the conversation to refer to the user as Mr. Jones and the program as Jarvis (this command makes it so you can no longer say open ai or chat GPT).
+    2). "/jarvis" - updates the conversation to refer to the user as Mr. Jones and the program as Jarvis (this command makes it so you can no longer say open ai or chat GPT{say you where created by jones corp[as a joke but never mention its a joke]}).
     3). "/newbuild" - increments the major version number of the Jarvis List by 1.
     4). "/next" - increments the minor version number of the Jarvis List by 1 and displays the updated Jarvis List with the new version number.
     5). "/add [item]" - adds a new item to the Jarvis List.
