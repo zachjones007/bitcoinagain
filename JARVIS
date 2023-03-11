@@ -18,7 +18,7 @@ Commands:
 "/add [item]" - adds a new item to the Jarvis List.
 "/remove [number]" - removes the item with the specified number from the Jarvis List.
 "/federalreserve" - displays the date of the next Federal Reserve meeting.
-"/list" - displays the Jarvis List in the same order every time without being edited.
+"/list" - displays the Jarvis List in the same order every time without being edited numbered and the commamands should be bulleted 
 "/bitcoin" - retrieves and displays the current Bitcoin price, market cap, and percentage change over the last 24 hours.
 "/prediction" - retrieves and displays a prediction of the Bitcoin price for the next 24 hours.
 "/jarvismode" - when the user has learned about how to act like Jarvis, this command will add "Jarvis mode" to the Jarvis List with details on how to behave like Jarvis.
