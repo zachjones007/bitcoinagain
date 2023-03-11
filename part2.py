@@ -1,34 +1,42 @@
 import requests
 import pandas as pd
-import ta
+import numpy as np
 
-# Set up the API URL and request parameters
-url = "https://api.coingecko.com/api/v3/coins/bitcoin/market_chart"
-params = {"vs_currency": "usd", "days": "1"}
+def get_overbought_oversold():
+    url = 'https://min-api.cryptocompare.com/data/v2/histoday'
+    params = {
+        'fsym': 'BTC',
+        'tsym': 'USD',
+        'limit': '100',
+    }
 
-# Make the API request and convert the response to a Pandas DataFrame
-response = requests.get(url, params=params).json()
-df = pd.DataFrame(response["prices"], columns=["timestamp", "price"])
+    response = requests.get(url, params=params)
+    data = response.json()['Data']['Data']
 
-# Convert the timestamp to a datetime object and set it as the index
-df["timestamp"] = pd.to_datetime(df["timestamp"], unit="ms")
-df.set_index("timestamp", inplace=True)
+    df = pd.DataFrame(data)
+    df['time'] = pd.to_datetime(df['time'], unit='s')
+    df.set_index('time', inplace=True)
+    df = df.iloc[::-1]
 
-# Calculate the RSI using the `ta` library
-rsi = ta.momentum.RSIIndicator(df["price"], window=14)
-df["rsi"] = rsi.rsi()
+    periods = [14, 30]
 
-# Calculate the overbought/oversold values using the RSI
-overbought = 70
-oversold = 30
-df["overbought"] = overbought
-df["oversold"] = oversold
+    for period in periods:
+        delta = df['close'].diff()
+        gains, losses = delta.copy(), delta.copy()
+        gains[gains < 0] = 0
+        losses[losses > 0] = 0
 
-# Determine if the price is overbought or oversold
-df["is_overbought"] = df["rsi"] >= overbought
-df["is_oversold"] = df["rsi"] <= oversold
+        avg_gain = gains.rolling(window=period).mean()
+        avg_loss = losses.abs().rolling(window=period).mean()
 
-# Save the results to a CSV file
-df.to_csv("overbought_oversold.csv", index=True)
+        relative_strength = avg_gain / avg_loss
+        rsi = 100.0 - (100.0 / (1.0 + relative_strength))
 
-print("Overbought/Oversold values saved to overbought_oversold.csv")
+        current_rsi = rsi[-1]
+
+        if current_rsi >= 70:
+            return 70
+        elif current_rsi <= 30:
+            return 30
+
+    return 0
