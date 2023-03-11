@@ -1,20 +1,24 @@
-import os
-import sys
-import numpy as np
-import pandas as pd
+def print_results():
+    symbol = 'BTCUSDT'
+    interval = '1d'
+    rsi_time_period = 14
 
-# add the bitcoinagain directory to the path
-module_path = os.path.abspath(os.path.join('..'))
-if module_path not in sys.path:
-    sys.path.append(module_path)
+    # Part 1 - RSI Values
+    rsi_value = get_rsi(symbol, interval, rsi_time_period)
+    print('Part 1 - RSI Values:')
+    print(rsi_value)
 
-# import the part1 and part2 functions
-from bitcoinagain.part1 import get_rsi
-from bitcoinagain.part2 import get_overbought_oversold
-from bitcoinagain.part3 import get_market_sentiment
+    # Part 2 - Overbought/Oversold Values
+    overbought_oversold = get_overbought_oversold(symbol, interval)
+    print('Part 2 - Overbought/Oversold Values:')
+    if overbought_oversold == "Overbought":
+        print("Overbought")
+    elif overbought_oversold == "Oversold":
+        print("Oversold")
+    else:
+        print("Neutral")
 
-symbol = 'BTCUSDT'
-interval = '1d'
-rsi_time_period = 14
-market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
-print('Market Sentiment:', market_sentiment)
+    # Part 3 - Analysis Result
+    market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
+    print('Part 3 - Analysis Result:')
+    print(market_sentiment)
