@@ -1,4 +1,10 @@
+import part1
+import part2
 import part3
 
-result = part3.combine()
-print(f"The combined score is: {result}")
+def main():
+    result = combine()
+    print(f"Combined score: {result}")
+
+if __name__ == "__main__":
+    main()
