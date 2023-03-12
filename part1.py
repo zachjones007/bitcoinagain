@@ -1,51 +1,32 @@
-import requests
+import os
+import sys
 import numpy as np
 import pandas as pd
 
-def get_rsi(symbol, interval, time_period):
-    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}'
-    response = requests.get(url)
-    data = response.json()
-    df = pd.DataFrame(data)
-    df = df.iloc[:,:6]
-    df.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
-    df = df.astype(float)
-    delta = df['close'].diff()
-    gain = delta.where(delta > 0, 0)
-    loss = -delta.where(delta < 0, 0)
-    avg_gain = gain.rolling(window=time_period).mean()
-    avg_loss = loss.rolling(window=time_period).mean()
-    rs = avg_gain / avg_loss
-    rsi = 100 - (100 / (1 + rs))
-    return rsi.iloc[-1]
+# add the bitcoinagain directory to the path
+module_path = os.path.abspath(os.path.join('..'))
+if module_path not in sys.path:
+    sys.path.append(module_path)
 
-def get_overbought_oversold(symbol, interval):
-    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}'
-    response = requests.get(url)
-    data = response.json()
-    close_prices = [float(entry[4]) for entry in data]
-    high_prices = [float(entry[2]) for entry in data]
-    low_prices = [float(entry[3]) for entry in data]
-    for i in range(len(close_prices)):
-        if high_prices[i] > 0:
-            rsi = 100 - (100 / (1 + (close_prices[i] / high_prices[i])))
-            break
-        elif low_prices[i] > 0:
-            rsi = 100 - (100 / (1 + (close_prices[i] / low_prices[i])))
-            break
-    overbought = (rsi >= 70)
-    oversold = (rsi <= 30)
-    return overbought, oversold
+# import the part1 and part2 functions
+from bitcoinagain.part1 import get_rsi
+from bitcoinagain.part2 import get_market_trend
 
 def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
     rsi_value = get_rsi(symbol, interval, rsi_time_period)
-    overbought, oversold = get_overbought_oversold(symbol, interval)
-    if overbought:
-        sentiment = 100
-    elif oversold:
-        sentiment = 0
+    market_trend = get_market_trend(symbol, interval)
+    if market_trend == 'Bullish':
+        sentiment = 1
+    elif market_trend == 'Bearish':
+        sentiment = -1
     else:
-        sentiment = (rsi_value - 30) * 100 / 40
+        if rsi_value < 30:
+            sentiment = 1
+        elif rsi_value > 70:
+            sentiment = -1
+        else:
+            sentiment = 0
+
     return sentiment
 
 symbol = 'BTCUSDT'
@@ -53,3 +34,4 @@ interval = '1d'
 rsi_time_period = 14
 market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
 print('Market Sentiment:', market_sentiment)
+
