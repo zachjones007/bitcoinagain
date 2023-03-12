@@ -1,25 +1,44 @@
 import requests
-import numpy as np
 
-def get_ma20(symbol):
-    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=20'
+def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
+    # Get RSI
+    url = f'https://api.coingecko.com/api/v3/coins/{symbol}/market_chart?vs_currency=usd&days=30&interval={interval}'
     response = requests.get(url)
     data = response.json()
 
-    closes = np.array([float(d[4]) for d in data])
-    ma20 = np.mean(closes)
+    closes = [d[1] for d in data['prices']]
+    rsi_values = []
+    for i in range(rsi_time_period, len(closes)+1):
+        delta = np.diff(closes[i-rsi_time_period:i])
+        ups = delta.clip(min=0)
+        downs = -1*delta.clip(max=0)
+        ups_avg = np.mean(ups)
+        downs_avg = np.mean(downs)
+        rs = ups_avg / downs_avg
+        rsi = 100 - (100 / (1 + rs))
+        rsi_values.append(rsi)
 
-    return ma20
+    rsi_value = rsi_values[-1]
 
-def get_market_direction(symbol):
-    url = f'https://api.binance.com/api/v3/ticker/price?symbol={symbol}'
+    # Get Trading Volume
+    url = f'https://api.coingecko.com/api/v3/coins/{symbol}/market_chart?vs_currency=usd&days=30&interval={interval}'
     response = requests.get(url)
     data = response.json()
 
-    current_price = float(data['price'])
-    ma20 = get_ma20(symbol)
+    volumes = [d[1] for d in data['total_volumes']]
+    volume_score = ((volumes[-1] - min(volumes)) / (max(volumes) - min(volumes))) * 100
 
-    if current_price > ma20:
-        return 1 # bullish
+    # Determine Market Sentiment
+    if rsi_value < 30:
+        sentiment = 'Strongly Bullish'
+    elif rsi_value < 50:
+        sentiment = 'Bullish'
+    elif rsi_value < 70:
+        sentiment = 'Neutral'
+    elif rsi_value < 90:
+        sentiment = 'Bearish'
     else:
-        return -1 # bearish
+        sentiment = 'Strongly Bearish'
+
+    print(f'Market Sentiment: {sentiment}, Volume Score: {volume_score:.2f}')
+    return sentiment, volume_score
