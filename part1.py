@@ -1,51 +1,26 @@
 import requests
 import numpy as np
+import pandas as pd
 
-class Bitcoin:
-    def __init__(self):
-        self.base_url = 'https://api.pro.coinbase.com'
-        self.product_id = 'BTC-USD'
+def get_rsi(symbol, interval, time_period):
+    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}'
+    response = requests.get(url)
+    data = response.json()
+    df = pd.DataFrame(data)
+    df = df.iloc[:,:6]
+    df.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
+    df = df.astype(float)
+    delta = df['close'].diff()
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+    avg_gain = gain.rolling(window=time_period).mean()
+    avg_loss = loss.rolling(window=time_period).mean()
+    rs = avg_gain / avg_loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi.iloc[-1]
 
-    def get_historical_data(self):
-        url = f"{self.base_url}/products/{self.product_id}/candles"
-        params = {
-            'granularity': '86400' # 1 day
-        }
-        response = requests.get(url, params=params)
-
-        data = response.json()
-        prices = [float(row[4]) for row in data]
-        rsi = self.calculate_rsi(prices)
-
-        return {
-            'prices': prices,
-            'rsi': rsi
-        }
-
-    def calculate_rsi(self, data, period=14):
-        # Calculate the gains and losses for each period
-        changes = [data[i] - data[i-1] for i in range(1, len(data))]
-        gains = [max(0, x) for x in changes]
-        losses = [max(0, -x) for x in changes]
-
-        # Calculate the average gains and losses over the specified period
-        avg_gain = sum(gains[:period]) / period
-        avg_loss = sum(losses[:period]) / period
-
-        # Calculate the initial RSI value
-        rs = avg_gain / avg_loss
-        rsi = 100 - (100 / (1 + rs))
-
-        # Calculate the RSI values for subsequent periods
-        for i in range(period, len(data)):
-            change = data[i] - data[i-1]
-            gain = max(0, change)
-            loss = max(0, -change)
-
-            avg_gain = ((period - 1) * avg_gain + gain) / period
-            avg_loss = ((period - 1) * avg_loss + loss) / period
-
-            rs = avg_gain / avg_loss
-            rsi = 100 - (100 / (1 + rs))
-
-        return rsi
+symbol = 'BTCUSDT'
+interval = '1d'
+time_period = 14
+rsi_value = get_rsi(symbol, interval, time_period)
+print('RSI:', rsi_value)
