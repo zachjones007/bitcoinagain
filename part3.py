@@ -22,20 +22,8 @@ def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
     else:
         sentiment = (rsi_value - 30) * 100 / 40
 
-    # load the DXY data from a csv file
-    dxy_data = pd.read_csv('dxy_data.csv')
-
-    # calculate the 14-day RSI for DXY
-    delta = dxy_data['Close'].diff()
-    gain = delta.where(delta > 0, 0)
-    loss = -delta.where(delta < 0, 0)
-    avg_gain = gain.rolling(window=14).mean()
-    avg_loss = loss.rolling(window=14).mean()
-    rs = avg_gain / avg_loss
-    dxy_rsi = 100 - (100 / (1 + rs.iloc[-1]))
-
-    # multiply the sentiment value by the DXY RSI value
-    market_sentiment = sentiment * dxy_rsi / 100
+    market_trend_value = 1 if market_trend == 'Bullish' else 0
+    market_sentiment = rsi_value * market_trend_value
 
     return market_sentiment
 
