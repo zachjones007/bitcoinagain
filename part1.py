@@ -21,14 +21,9 @@ def get_rsi(symbol, days):
     avg_down = downs / 14
     rs = avg_up / avg_down
     rsi = 100 - (100 / (1 + rs))
-    if rsi < 30:
-        return rsi, "Bearish"
-    elif rsi > 70:
-        return rsi, "Bullish"
-    else:
-        return rsi, "Neutral"
+    return round(rsi, 2)
 
 symbol = 'bitcoin'
 days = '14'
-rsi_value, market_trend = get_rsi(symbol, days)
-print(f'RSI value for {symbol} for the last {days} days is {rsi_value:.2f} and the market trend is {market_trend}.') 
+rsi_score = get_rsi(symbol, days)
+print(f'RSI score for {symbol} for the last {days} days is {rsi_score:.2f}.')
