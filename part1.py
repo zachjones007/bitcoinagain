@@ -1,88 +1,34 @@
-import os
-import sys
-import numpy as np
-import pandas as pd
+import requests
 
-def get_rsi(symbol, interval='1d', time_period=14):
-    api_key = os.environ.get('ALPHAVANTAGE_API_KEY')
-    if api_key is None:
-        print('API key for Alpha Vantage not found.')
-        return None
-
-    url = 'https://www.alphavantage.co/query'
-    params = {
-        'function': 'RSI',
-        'symbol': symbol,
-        'interval': interval,
-        'time_period': time_period,
-        'series_type': 'close',
-        'apikey': api_key
-    }
-
-    response = requests.get(url, params=params)
+def get_rsi(symbol, days):
+    url = f"https://api.coingecko.com/api/v3/coins/{symbol}/market_chart?vs_currency=usd&days={days}"
+    response = requests.get(url)
     data = response.json()
-    if 'Technical Analysis: RSI' not in data:
-        print('Error: data not found')
-        return None
-
-    rsi_values = []
-    for date in sorted(data['Technical Analysis: RSI']):
-        rsi_values.append(float(data['Technical Analysis: RSI'][date]['RSI']))
-
-    return rsi_values[-1]
-
-def get_market_trend(symbol, interval='1d'):
-    api_key = os.environ.get('ALPHAVANTAGE_API_KEY')
-    if api_key is None:
-        print('API key for Alpha Vantage not found.')
-        return None
-
-    url = 'https://www.alphavantage.co/query'
-    params = {
-        'function': 'SMA',
-        'symbol': symbol,
-        'interval': interval,
-        'time_period': '50',
-        'series_type': 'close',
-        'apikey': api_key
-    }
-
-    response = requests.get(url, params=params)
-    data = response.json()
-    if 'Technical Analysis: SMA' not in data:
-        print('Error: data not found')
-        return None
-
-    sma_values = []
-    for date in sorted(data['Technical Analysis: SMA']):
-        sma_values.append(float(data['Technical Analysis: SMA'][date]['SMA']))
-
-    if sma_values[-1] > sma_values[-2]:
-        return 'Bullish'
-    else:
-        return 'Bearish'
-
-def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
-    rsi_value = get_rsi(symbol, interval, rsi_time_period)
-    market_trend = get_market_trend(symbol, interval)
-    if market_trend == 'Bullish':
-        sentiment = 1
-    elif market_trend == 'Bearish':
-        sentiment = -1
-    else:
-        if rsi_value < 30:
-            sentiment = 1
-        elif rsi_value > 70:
-            sentiment = -1
+    prices = []
+    for p in data['prices']:
+        prices.append(p[1])
+    changes = []
+    for i in range(1, len(prices)):
+        changes.append(prices[i] - prices[i-1])
+    ups = 0
+    downs = 0
+    for c in changes[:14]:
+        if c > 0:
+            ups += c
         else:
-            sentiment = 0
+            downs -= c
+    avg_up = ups / 14
+    avg_down = downs / 14
+    rs = avg_up / avg_down
+    rsi = 100 - (100 / (1 + rs))
+    if rsi < 30:
+        return rsi, "Bearish"
+    elif rsi > 70:
+        return rsi, "Bullish"
+    else:
+        return rsi, "Neutral"
 
-    return sentiment
-
-symbol = 'BTCUSDT'
-interval = '1d'
-rsi_time_period = 14
-market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
-print('Market Sentiment:', market_sentiment)
-
-
+symbol = 'bitcoin'
+days = '14'
+rsi_value, market_trend = get_rsi(symbol, days)
+print(f'RSI value for {symbol} for the last {days} days is {rsi_value:.2f} and the market trend is {market_trend}.') 
