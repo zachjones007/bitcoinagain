@@ -16,22 +16,24 @@ def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
     rsi_value = get_rsi(symbol, interval, rsi_time_period)
     market_trend = get_market_trend(symbol, interval)
     if market_trend == 'Bullish':
-        sentiment = 100
+        market_trend_value = 1
     elif market_trend == 'Bearish':
-        sentiment = 0
+        market_trend_value = -1
     else:
-        sentiment = (rsi_value - 30) * 100 / 40
+        market_trend_value = 0
+        
+    # calculate the 20-day moving average
+    df = pd.read_csv(f"{symbol}_{interval}.csv")
+    df['SMA_20'] = df['Close'].rolling(window=20).mean()
+    latest_close = df.iloc[-1]['Close']
+    latest_sma = df.iloc[-1]['SMA_20']
+    if latest_close > latest_sma:
+        sma_trend_value = 1
+    else:
+        sma_trend_value = -1
 
-    market_trend_value = 1 if market_trend == 'Bullish' else 0
-    market_sentiment = rsi_value * market_trend_value
-    market_sentiment_with_equation = sentiment * market_sentiment / 100
+    # calculate the market sentiment score as the sum of RSI and trend values
+    market_sentiment = rsi_value + market_trend_value + sma_trend_value
 
-    return market_sentiment, market_sentiment_with_equation
-
-symbol = 'BTCUSDT'
-interval = '1d'
-rsi_time_period = 14
-market_sentiment, market_sentiment_with_equation = get_market_sentiment(symbol, interval, rsi_time_period)
-print('Market Sentiment (Part 3):', market_sentiment)
-print('Market Sentiment with Equation (Part 3):', market_sentiment_with_equation)
+    return market_sentiment
 
