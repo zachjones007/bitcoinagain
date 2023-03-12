@@ -10,14 +10,14 @@ if module_path not in sys.path:
 
 # import the part1 and part2 functions
 from bitcoinagain.part1 import get_rsi
-from bitcoinagain.part2 import get_overbought_oversold
+from bitcoinagain.part2 import get_market_trend
 
 def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
     rsi_value = get_rsi(symbol, interval, rsi_time_period)
-    overbought, oversold = get_overbought_oversold(symbol, interval)
-    if overbought:
+    market_trend = get_market_trend(symbol, interval)
+    if market_trend == 'Bullish':
         sentiment = 100
-    elif oversold:
+    elif market_trend == 'Bearish':
         sentiment = 0
     else:
         sentiment = (rsi_value - 30) * 100 / 40
