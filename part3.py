@@ -28,18 +28,19 @@ def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
         else:
             sentiment = 0
 
-    return sentiment, rsi_value
+    return sentiment
 
-if __name__ == '__main__':
-    symbol = 'bitcoin'
-    interval = 'daily'
-    rsi_time_period = 14
-    market_sentiment, rsi_value = get_market_sentiment(symbol, interval, rsi_time_period)
+symbol = 'bitcoin'
+rsi_value = get_rsi(symbol)
+market_trend = get_market_trend(symbol)
+market_sentiment = get_market_sentiment(symbol)
 
-    if market_sentiment == 1:
-        print('Market sentiment is bullish with RSI value of', rsi_value)
-    elif market_sentiment == -1:
-        print('Market sentiment is bearish with RSI value of', rsi_value)
-    else:
-        print('Market sentiment is neutral with RSI value of', rsi_value)
+if market_sentiment == 1:
+    print('Market Sentiment: Positive (Bullish)')
+elif market_sentiment == -1:
+    print('Market Sentiment: Negative (Bearish)')
+else:
+    print('Market Sentiment: Neutral')
 
+print('RSI Value:', rsi_value)
+print('Market Trend:', market_trend)
