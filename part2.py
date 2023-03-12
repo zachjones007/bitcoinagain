@@ -1,25 +1,31 @@
 import requests
 import numpy as np
 import pandas as pd
+from ta.trend import MACD
 
-def get_overbought_oversold(symbol, interval):
-    url = f'https://query1.finance.yahoo.com/v7/finance/chart/{symbol}?interval={interval}'
+def get_macd(symbol, interval):
+    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}'
     response = requests.get(url)
     data = response.json()
-    timestamps = data['chart']['result'][0]['timestamp']
-    close_prices = data['chart']['result'][0]['indicators']['quote'][0]['close']
-    high_prices = data['chart']['result'][0]['indicators']['quote'][0]['high']
-    low_prices = data['chart']['result'][0]['indicators']['quote'][0]['low']
-    for i in range(len(close_prices)):
-        if high_prices[i] > 0:
-            rsi = 100 - (100 / (1 + (close_prices[i] / high_prices[i])))
-            break
-        elif low_prices[i] > 0:
-            rsi = 100 - (100 / (1 + (close_prices[i] / low_prices[i])))
-            break
-    if rsi >= 70:
-        return "Overbought"
-    elif rsi <= 30:
-        return "Oversold"
+    df = pd.DataFrame(data)
+    df = df.iloc[:,:6]
+    df.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
+    df = df.astype(float)
+    macd = MACD(df['close']).macd()
+    signal = MACD(df['close']).macd_signal()
+    return macd.iloc[-1], signal.iloc[-1]
+
+def get_market_sentiment(symbol, interval='1d'):
+    macd_value, signal_value = get_macd(symbol, interval)
+    if macd_value > signal_value:
+        sentiment = 100
+    elif macd_value < signal_value:
+        sentiment = 0
     else:
-        return "Neutral"
+        sentiment = 50
+    return sentiment
+
+symbol = 'BTCUSDT'
+interval = '1d'
+market_sentiment = get_market_sentiment(symbol, interval)
+print('Market Sentiment:', market_sentiment)
