@@ -1,31 +1,25 @@
 import requests
 import numpy as np
-import pandas as pd
-from ta.trend import MACD
 
-def get_macd(symbol, interval):
-    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}'
+def get_ma20(symbol):
+    url = f'https://api.binance.com/api/v3/klines?symbol={symbol}&interval=1d&limit=20'
     response = requests.get(url)
     data = response.json()
-    df = pd.DataFrame(data)
-    df = df.iloc[:,:6]
-    df.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
-    df = df.astype(float)
-    macd = MACD(df['close']).macd()
-    signal = MACD(df['close']).macd_signal()
-    return macd.iloc[-1], signal.iloc[-1]
 
-def get_market_sentiment(symbol, interval='1d'):
-    macd_value, signal_value = get_macd(symbol, interval)
-    if macd_value > signal_value:
-        sentiment = 100
-    elif macd_value < signal_value:
-        sentiment = 0
+    closes = np.array([float(d[4]) for d in data])
+    ma20 = np.mean(closes)
+
+    return ma20
+
+def get_market_direction(symbol):
+    url = f'https://api.binance.com/api/v3/ticker/price?symbol={symbol}'
+    response = requests.get(url)
+    data = response.json()
+
+    current_price = float(data['price'])
+    ma20 = get_ma20(symbol)
+
+    if current_price > ma20:
+        return 1 # bullish
     else:
-        sentiment = 50
-    return sentiment
-
-symbol = 'BTCUSDT'
-interval = '1d'
-market_sentiment = get_market_sentiment(symbol, interval)
-print('Market Sentiment:', market_sentiment)
+        return -1 # bearish
