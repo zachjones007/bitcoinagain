@@ -24,11 +24,14 @@ def get_market_sentiment(symbol, interval='1d', rsi_time_period=14):
 
     market_trend_value = 1 if market_trend == 'Bullish' else 0
     market_sentiment = rsi_value * market_trend_value
+    market_sentiment_with_equation = sentiment * market_sentiment / 100
 
-    return market_sentiment
+    return market_sentiment, market_sentiment_with_equation
 
 symbol = 'BTCUSDT'
 interval = '1d'
 rsi_time_period = 14
-market_sentiment = get_market_sentiment(symbol, interval, rsi_time_period)
-print('Market Sentiment:', market_sentiment)
+market_sentiment, market_sentiment_with_equation = get_market_sentiment(symbol, interval, rsi_time_period)
+print('Market Sentiment (Part 3):', market_sentiment)
+print('Market Sentiment with Equation (Part 3):', market_sentiment_with_equation)
+
